@@ -19,5 +19,11 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.app_bar_layout).setOnClickListener {
             startActivity(Intent(this@MainActivity, AppLayoutActivity::class.java))
         }
+
+        findViewById<TextView>(R.id.move_iew).setOnClickListener {
+            startActivity(Intent(this@MainActivity, MoveViewActivity::class.java))
+        }
+
+
     }
 }

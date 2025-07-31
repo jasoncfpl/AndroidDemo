@@ -10,9 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidDemo">
         <activity
+            android:name=".MoveViewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:label="@string/title_activity_move_view"
+            android:theme="@style/Theme.AndroidDemo.Fullscreen" />
+        <activity
             android:name=".AppLayoutActivity"
-            android:theme="@style/ActivityTheme"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/ActivityTheme" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
