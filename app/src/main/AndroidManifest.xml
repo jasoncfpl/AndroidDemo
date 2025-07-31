@@ -11,10 +11,12 @@
         android:theme="@style/Theme.AndroidDemo">
         <activity
             android:name=".AppLayoutActivity"
+            android:theme="@style/ActivityTheme"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/ActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
