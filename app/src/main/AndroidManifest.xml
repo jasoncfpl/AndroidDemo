@@ -10,6 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidDemo">
         <activity
+            android:name=".ViewPagerActivity"
+            android:exported="false"
+            android:label="画廊效果"
+            android:theme="@style/ActivityTheme" />
+        <activity
             android:name=".MoveViewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"

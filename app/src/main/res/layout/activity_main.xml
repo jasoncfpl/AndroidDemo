@@ -42,6 +42,34 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:text="MoveView"/>
 
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消"
+            app:layout_constraintTop_toBottomOf="@id/move_iew"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_confirm"/>
+
+        <Button
+            android:id="@+id/btn_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="确认"
+            app:layout_constraintTop_toBottomOf="@id/move_iew"
+            app:layout_constraintStart_toEndOf="@id/btn_cancel"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <Button
+            android:id="@+id/btn_view_pager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="画廊效果"
+            app:layout_constraintTop_toBottomOf="@id/btn_confirm"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
