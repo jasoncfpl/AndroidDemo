@@ -29,6 +29,22 @@
 
     </style>
 
+    <style name="NoActionActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="android:statusBarColor">@color/purple_500</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowActionBarOverlay">false</item>
+        <!-- 兼容支持库 -->
+        <item name="windowActionBarOverlay">false</item>
+
+
+    </style>
+
     <style name="Theme.AndroidDemo.Fullscreen" parent="Theme.AndroidDemo">
         <item name="android:actionBarStyle">@style/Widget.Theme.AndroidDemo.ActionBar.Fullscreen
         </item>
