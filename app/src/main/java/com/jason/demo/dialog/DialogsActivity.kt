@@ -21,7 +21,8 @@ class DialogsActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.right_side_dialog).setOnClickListener {
-            Toast.makeText(this, "右侧弹窗", Toast.LENGTH_SHORT).show()
+           val rightSideDialog = RightSideDialog(this)
+            rightSideDialog.show()
         }
 
     }
