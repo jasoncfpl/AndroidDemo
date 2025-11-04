@@ -51,7 +51,17 @@ class ScrollingTextView @JvmOverloads constructor(
             return
         }
 
-        // 直接使用 Paint 绘制文字，这样可以完全控制绘制区域
+        // 保存 Canvas 状态
+        canvas.save()
+        
+        // 设置裁剪区域，限制文字只在 TextView 的可见区域内显示
+        val clipLeft = paddingLeft.toFloat()
+        val clipRight = (width - paddingRight).toFloat()
+        val clipTop = paddingTop.toFloat()
+        val clipBottom = (height - paddingBottom).toFloat()
+        canvas.clipRect(clipLeft, clipTop, clipRight, clipBottom)
+
+        // 直接使用 Paint 绘制文字
         val textStr = text.toString()
         val paint = paint
         paint.color = currentTextColor
@@ -72,9 +82,11 @@ class ScrollingTextView @JvmOverloads constructor(
             textStartX
         }
         
-        // 直接绘制文字，不受 TextView 边界限制
-        // 父容器已设置 clipChildren="false"，所以文字可以超出边界显示
+        // 在裁剪区域内绘制文字
         canvas.drawText(textStr, drawX, textY, paint)
+        
+        // 恢复 Canvas 状态
+        canvas.restore()
     }
 
     private fun checkIfNeedScroll() {
