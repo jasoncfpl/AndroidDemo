@@ -29,6 +29,10 @@
             android:exported="false"
             android:theme="@style/NoActionActivityTheme" />
         <activity
+            android:name=".ScrollTextViewActivity"
+            android:exported="false"
+            android:theme="@style/ActivityTheme" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/ActivityTheme">

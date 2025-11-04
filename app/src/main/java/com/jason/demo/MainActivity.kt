@@ -51,6 +51,10 @@ class MainActivity : AppCompatActivity() {
 //            test2()
         }
 
+        findViewById<Button>(R.id.btn_scroll_text_view).setOnClickListener {
+            startActivity(Intent(this@MainActivity, ScrollTextViewActivity::class.java))
+        }
+
     }
     private val TAG = "MainActivity"
 
