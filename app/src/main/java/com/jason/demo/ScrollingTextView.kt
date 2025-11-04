@@ -45,25 +45,36 @@ class ScrollingTextView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         // 先绘制背景（背景不滚动，保持在原位）
-        super.onDrawBackground(canvas)
+        background?.draw(canvas)
         
-        if (scrollOffset > 0 && text != null && text.isNotEmpty()) {
-            canvas.save()
-            // 扩展可绘制区域，允许文字超出右边界显示
-            // clipRect 的右边界扩展到足够显示滚动后的文字
-            val clipLeft = paddingLeft.toFloat()
-            val clipRight = (width - paddingRight + scrollOffset).toFloat()
-            val clipTop = paddingTop.toFloat()
-            val clipBottom = (height - paddingBottom).toFloat()
-            canvas.clipRect(clipLeft, clipTop, clipRight, clipBottom)
-            // 向左平移画布，使文字向左滚动
-            canvas.translate(-scrollOffset, 0f)
-            // 绘制文字内容
-            super.onDraw(canvas)
-            canvas.restore()
-        } else {
-            super.onDraw(canvas)
+        if (text == null || text.isEmpty()) {
+            return
         }
+
+        // 直接使用 Paint 绘制文字，这样可以完全控制绘制区域
+        val textStr = text.toString()
+        val paint = paint
+        paint.color = currentTextColor
+        paint.textSize = textSize
+        paint.isAntiAlias = true
+        
+        // 计算文字绘制的垂直位置（垂直居中）
+        val fontMetrics = paint.fontMetrics
+        val textY = (height / 2f) - ((fontMetrics.ascent + fontMetrics.descent) / 2f)
+        
+        // 计算文字绘制的水平起始位置
+        val textStartX = paddingLeft.toFloat()
+        
+        // 如果有滚动偏移，调整文字起始位置（向左移动）
+        val drawX = if (scrollOffset > 0) {
+            textStartX - scrollOffset
+        } else {
+            textStartX
+        }
+        
+        // 直接绘制文字，不受 TextView 边界限制
+        // 父容器已设置 clipChildren="false"，所以文字可以超出边界显示
+        canvas.drawText(textStr, drawX, textY, paint)
     }
 
     private fun checkIfNeedScroll() {
