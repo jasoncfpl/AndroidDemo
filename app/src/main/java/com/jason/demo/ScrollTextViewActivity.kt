@@ -12,6 +12,8 @@ class ScrollTextViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_scroll_text_view)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        findViewById<ScrollingTextView>(R.id.scrolling_text_view).setScrollDuration(4000)
     }
 }
 

@@ -16,10 +16,19 @@ class ScrollingTextView @JvmOverloads constructor(
     private var scrollOffset = 0f
     private var isScrolling = false
     private var maxScrollDistance = 0f
+    private var scrollDuration: Long = -1 // 滚动时长（毫秒），-1 表示使用默认计算方式
 
     init {
         isSingleLine = true
         ellipsize = null
+    }
+
+    /**
+     * 设置滚动时长
+     * @param duration 滚动时长（毫秒），如果设置为 -1 或小于 0，则使用默认计算方式（50像素/秒）
+     */
+    fun setScrollDuration(duration: Long) {
+        scrollDuration = if (duration < 0) -1 else duration
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -118,7 +127,12 @@ class ScrollingTextView @JvmOverloads constructor(
         scrollOffset = 0f
 
         scrollAnimator = ValueAnimator.ofFloat(0f, maxScrollDistance).apply {
-            duration = (maxScrollDistance / 50 * 1000).toLong() // 控制滚动速度，50像素/秒
+            // 如果设置了自定义时长，使用自定义时长；否则使用默认计算方式（50像素/秒）
+            duration = if (scrollDuration > 0) {
+                scrollDuration
+            } else {
+                (maxScrollDistance / 50 * 1000).toLong() // 默认速度：50像素/秒
+            }
             addUpdateListener { animation ->
                 scrollOffset = animation.animatedValue as Float
                 invalidate()
