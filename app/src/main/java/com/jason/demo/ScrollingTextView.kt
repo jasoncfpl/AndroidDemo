@@ -20,8 +20,6 @@ class ScrollingTextView @JvmOverloads constructor(
     init {
         isSingleLine = true
         ellipsize = null
-        setClipToPadding(false)
-        setClipChildren(false)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
