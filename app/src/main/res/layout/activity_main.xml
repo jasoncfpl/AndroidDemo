@@ -88,6 +88,36 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"/>
 
+        <Button
+            android:id="@+id/btn_iphone_toast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="iPhone Toast (居中)"
+            app:layout_constraintTop_toBottomOf="@id/btn_scroll_text_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"/>
+
+        <Button
+            android:id="@+id/btn_iphone_toast_short"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="iPhone Toast (短时)"
+            app:layout_constraintTop_toBottomOf="@id/btn_iphone_toast"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"/>
+
+        <Button
+            android:id="@+id/btn_iphone_toast_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="iPhone Toast (底部)"
+            app:layout_constraintTop_toBottomOf="@id/btn_iphone_toast_short"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

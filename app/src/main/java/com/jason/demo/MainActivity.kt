@@ -62,6 +62,21 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_scroll_text_view).setOnClickListener {
             startActivity(Intent(this@MainActivity, ScrollTextViewActivity::class.java))
         }
+
+        findViewById<Button>(R.id.btn_iphone_toast).setOnClickListener {
+            // 测试 iPhone 风格的 Toast - 居中显示
+            ToastUtils.show(this, "这是 iPhone 风格的 Toast 提示（居中）", iconRes = R.mipmap.ic_launcher)
+        }
+
+        findViewById<Button>(R.id.btn_iphone_toast_short).setOnClickListener {
+            // 测试短时 Toast
+            ToastUtils.showShort(this, "短时提示（1.5秒）")
+        }
+
+        findViewById<Button>(R.id.btn_iphone_toast_bottom).setOnClickListener {
+            // 测试底部 Toast
+            ToastUtils.showBottom(this, "底部显示的 Toast 提示")
+        }
     }
     private val TAG = "MainActivity"
 
