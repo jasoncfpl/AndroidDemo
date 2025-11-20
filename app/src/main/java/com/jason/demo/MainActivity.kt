@@ -2,6 +2,9 @@ package com.jason.demo
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Shader
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -14,11 +17,15 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var textView:TextView
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+
+        textView = findViewById<TextView>(R.id.app_bar_layout)
 
         findViewById<TextView>(R.id.app_bar_layout).setOnClickListener {
             startActivity(Intent(this@MainActivity, AppLayoutActivity::class.java))
@@ -47,33 +54,79 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_view_pager).setOnClickListener {
             val index = 1
 //            startActivity(Intent(this@MainActivity, ViewPagerActivity::class.java))
-            test()
+//            test()
+            test1()
 //            test2()
         }
 
         findViewById<Button>(R.id.btn_scroll_text_view).setOnClickListener {
             startActivity(Intent(this@MainActivity, ScrollTextViewActivity::class.java))
         }
-
     }
     private val TAG = "MainActivity"
 
+    private fun test1() {
+        val colors = intArrayOf(Color.WHITE, Color.parseColor("#BEFF45")) //颜色的数组
+        val position = floatArrayOf(0.8f, 1.0f) //颜色渐变位置的数组
+        Log.i(TAG, "test1: ${textView.paint.textSize * textView.text.length}")
+
+        //        LinearGradient mLinearGradient = new LinearGradient(getMeasuredWidth()/2,0,0,getMeasuredHeight()/2,Color.RED,Color.GREEN, Shader.TileMode.CLAMP);
+        val mLinearGradient = LinearGradient(
+            textView.paint.textSize * textView.text.length / 3f ,
+            0f,
+            textView.paint.textSize * textView.text.length - 600f,
+           textView.paint.textSize,
+            colors,
+            position,
+            Shader.TileMode.CLAMP
+        )
+        textView.paint.setShader(mLinearGradient)
+        textView.invalidate()
+    }
+
     private fun test2() {
-        Observable.create<String> {	// it == CreateEmitter
-            Log.i(TAG, "事件产生线程：${Thread.currentThread().name}")
-            it.onNext("rx")
-            it.onCompleted()
-        }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext({
-                Log.i(TAG, "事件消费线程 doOnNext：${Thread.currentThread().name}")
-            })
-            .observeOn(Schedulers.io())
-            .subscribe {	// onNext
-                Log.i(TAG, "事件消费线程：${Thread.currentThread().name}")
-                Log.i(TAG, it)
+        Observable.just("1")
+            .observeOn(Schedulers.computation())
+            .map {
+                return@map listOf<String>("4","2","1","3")
             }
+
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { chatContacts ->
+                Log.i(TAG, "test2:${Thread.currentThread().name} " )
+                //先排序
+                if (chatContacts != null) {
+                    //本地删除的不显示
+                    val iterator = chatContacts.iterator()
+                    while (iterator.hasNext()) {
+                        val entity = iterator.next()
+
+                    }
+                }
+            }.map {
+                return@map it
+            }
+            .flatMap({
+                Log.i(TAG, "test2 flatMap:${Thread.currentThread().name} " )
+                return@flatMap Observable.just(it)
+            }) //数据库的数据和网络的数据合并
+            .observeOn(Schedulers.computation())
+            .map { net ->
+                Log.i(TAG, "test2 map:${Thread.currentThread().name} " )
+                return@map null
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { contactData ->
+                Log.i(TAG, "test2 doOnNext1:${Thread.currentThread().name} " )
+            }
+            .observeOn(Schedulers.computation())
+            .doOnNext {
+                Log.i(TAG, "test2 doOnNext2:${Thread.currentThread().name} " )
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe( {
+                Log.i(TAG, "subscribe:${Thread.currentThread().name} ")
+            })
 
     }
     private fun test() {
