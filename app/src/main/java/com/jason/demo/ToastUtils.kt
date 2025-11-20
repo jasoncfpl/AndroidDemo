@@ -2,12 +2,14 @@ package com.jason.demo
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -31,6 +33,7 @@ object ToastUtils {
     private var currentToastViewRef: WeakReference<View>? = null
     private var currentHandler: Handler? = null
     private var currentRunnable: Runnable? = null
+    private var currentWindowManager: WindowManager? = null
 
     /**
      * 显示 Toast
@@ -52,10 +55,6 @@ object ToastUtils {
         // 如果已有 Toast 正在显示，先隐藏它
         hide()
 
-        val activity = getActivity(context) ?: return
-        val rootView = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
-            ?: return
-
         // 创建 Toast 视图
         val toastView = LayoutInflater.from(context).inflate(R.layout.toast_iphone, null)
         val textView = toastView.findViewById<TextView>(R.id.toast_text)
@@ -76,31 +75,120 @@ object ToastUtils {
             textView.layoutParams = layoutParams
         }
 
+        // 尝试获取 Activity，优先使用 Activity 的方式
+        val activity = getActivity(context)
+        val rootView: ViewGroup?
+        val windowManager: WindowManager?
+        
+        if (activity != null) {
+            // 使用 Activity 的方式
+            rootView = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
+            windowManager = null
+        } else {
+            // 使用 WindowManager 的方式
+            rootView = null
+            windowManager = context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
+        }
+
+        if (rootView == null && windowManager == null) {
+            return
+        }
+
         // 设置布局参数
-        val layoutParams = FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply {
-            when (gravity) {
-                Gravity.CENTER -> {
-                    this.gravity = Gravity.CENTER
+        val layoutParams = if (rootView != null) {
+            // Activity 方式使用 FrameLayout.LayoutParams
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                when (gravity) {
+                    Gravity.CENTER -> {
+                        this.gravity = Gravity.CENTER
+                    }
+                    Gravity.BOTTOM -> {
+                        this.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                        bottomMargin = dpToPx(context, 100)
+                    }
+                    Gravity.TOP -> {
+                        this.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                        topMargin = dpToPx(context, 100)
+                    }
+                    else -> {
+                        this.gravity = Gravity.CENTER
+                    }
                 }
-                Gravity.BOTTOM -> {
-                    this.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                    bottomMargin = dpToPx(context, 100)
-                }
-                Gravity.TOP -> {
-                    this.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-                    topMargin = dpToPx(context, 100)
-                }
-                else -> {
-                    this.gravity = Gravity.CENTER
+            }
+        } else {
+            // WindowManager 方式使用 WindowManager.LayoutParams
+            val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            } else {
+                @Suppress("DEPRECATION")
+                WindowManager.LayoutParams.TYPE_TOAST
+            }
+            
+            WindowManager.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                windowType,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                android.graphics.PixelFormat.TRANSLUCENT
+            ).apply {
+                when (gravity) {
+                    Gravity.CENTER -> {
+                        this.gravity = Gravity.CENTER
+                    }
+                    Gravity.BOTTOM -> {
+                        this.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                        y = dpToPx(context, 100)
+                    }
+                    Gravity.TOP -> {
+                        this.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                        y = -dpToPx(context, 100)
+                    }
+                    else -> {
+                        this.gravity = Gravity.CENTER
+                    }
                 }
             }
         }
 
-        // 添加到根视图
-        rootView.addView(toastView, layoutParams)
+        // 添加到视图
+        if (rootView != null) {
+            rootView.addView(toastView, layoutParams)
+        } else if (windowManager != null) {
+            try {
+                windowManager.addView(toastView, layoutParams)
+                currentWindowManager = windowManager
+            } catch (e: Exception) {
+                // 如果添加失败（可能是权限问题），尝试使用 Activity 方式
+                val fallbackActivity = getActivityFromApplication(context)
+                if (fallbackActivity != null) {
+                    val fallbackRootView = fallbackActivity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
+                    if (fallbackRootView != null) {
+                        val fallbackParams = FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            this.gravity = when (gravity) {
+                                Gravity.CENTER -> Gravity.CENTER
+                                Gravity.BOTTOM -> Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                                Gravity.TOP -> Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                                else -> Gravity.CENTER
+                            }
+                            if (gravity == Gravity.BOTTOM) bottomMargin = dpToPx(context, 100)
+                            if (gravity == Gravity.TOP) topMargin = dpToPx(context, 100)
+                        }
+                        fallbackRootView.addView(toastView, fallbackParams)
+                    } else {
+                        return
+                    }
+                } else {
+                    return
+                }
+            }
+        }
 
         // 保存当前 Toast 视图（使用弱引用避免内存泄漏）
         currentToastViewRef = WeakReference(toastView)
@@ -197,12 +285,22 @@ object ToastUtils {
             override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
             override fun onAnimationEnd(animation: android.view.animation.Animation?) {
                 // 动画结束后移除视图
-                (toastView.parent as? ViewGroup)?.removeView(toastView)
+                val parent = toastView.parent
+                if (parent is ViewGroup) {
+                    parent.removeView(toastView)
+                } else if (currentWindowManager != null) {
+                    try {
+                        currentWindowManager?.removeView(toastView)
+                    } catch (e: Exception) {
+                        // 忽略移除失败的情况
+                    }
+                }
             }
         })
         toastView.startAnimation(fadeOutAnim)
 
         currentToastViewRef = null
+        currentWindowManager = null
     }
 
     /**
@@ -216,6 +314,17 @@ object ToastUtils {
             }
             ctx = ctx.baseContext
         }
+        return null
+    }
+
+    /**
+     * 从 Application 中尝试获取当前 Activity
+     */
+    private fun getActivityFromApplication(context: Context): Activity? {
+        // 尝试从 Application 获取
+        val application = context.applicationContext
+        // 这里可以扩展为使用 ActivityLifecycleCallbacks 来跟踪当前 Activity
+        // 但为了简化，这里返回 null，让调用方处理
         return null
     }
 
