@@ -5,11 +5,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 
-class LoadMoreAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+/**
+ * 通用加载更多适配器，支持任意数据类型。
+ *
+ * @param T 数据类型
+ * @param itemLayoutId 普通 item 布局
+ * @param bindItem 绑定回调，携带 itemView、数据和 position
+ */
+class LoadMoreAdapter<T>(@LayoutRes private val itemLayoutId: Int, private val bindItem: (itemView: View, itemData: T, position: Int) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val items = mutableListOf<String>()
+    private val items = mutableListOf<T>()
     private var isLoading = false
     private var hasMore = true
 
@@ -22,7 +30,7 @@ class LoadMoreAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return if (viewType == VIEW_TYPE_ITEM) {
-            val view = inflater.inflate(R.layout.item_load_more_content, parent, false)
+            val view = inflater.inflate(itemLayoutId, parent, false)
             ItemViewHolder(view)
         } else {
             val view = inflater.inflate(R.layout.item_load_more_footer, parent, false)
@@ -32,22 +40,28 @@ class LoadMoreAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is ItemViewHolder && position < items.size) {
-            holder.bind(items[position])
+            val item = items[position]
+            bindItem(holder.itemView, item, position)
         } else if (holder is FooterViewHolder) {
             holder.bind(isLoading, hasMore)
         }
     }
 
-    fun setItems(newItems: List<String>) {
+    fun setItems(newItems: Collection<T>) {
         items.clear()
         items.addAll(newItems)
         notifyDataSetChanged()
     }
 
-    fun appendItems(newItems: List<String>) {
+    fun appendItems(newItems: Collection<T>) {
         val start = items.size
         items.addAll(newItems)
         notifyItemRangeInserted(start, newItems.size)
+    }
+
+    fun clearItems() {
+        items.clear()
+        notifyDataSetChanged()
     }
 
     fun setLoading(loading: Boolean) {
@@ -62,13 +76,7 @@ class LoadMoreAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyItemChanged(items.size)
     }
 
-    private class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val textView: TextView = itemView.findViewById(R.id.item_text)
-
-        fun bind(text: String) {
-            textView.text = text
-        }
-    }
+    private class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     private class FooterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val progress: ProgressBar = itemView.findViewById(R.id.footer_progress)
