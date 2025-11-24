@@ -76,7 +76,13 @@ object ToastUtils {
         }
 
         // 尝试获取 Activity，优先使用 Activity 的方式
-        val activity = getActivity(context)
+        var activity = getActivity(context)
+        
+        // 如果 context 是 Application Context，尝试通过反射获取当前 Activity
+        if (activity == null && context.applicationContext == context) {
+            activity = getCurrentActivity()
+        }
+        
         val rootView: ViewGroup?
         val windowManager: WindowManager?
         
@@ -85,7 +91,7 @@ object ToastUtils {
             rootView = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
             windowManager = null
         } else {
-            // 使用 WindowManager 的方式
+            // 使用 WindowManager 的方式（使用 TYPE_TOAST，不需要权限）
             rootView = null
             windowManager = context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
         }
@@ -120,12 +126,9 @@ object ToastUtils {
             }
         } else {
             // WindowManager 方式使用 WindowManager.LayoutParams
-            val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            } else {
-                @Suppress("DEPRECATION")
-                WindowManager.LayoutParams.TYPE_TOAST
-            }
+            // 使用 TYPE_TOAST，不需要 SYSTEM_ALERT_WINDOW 权限
+            @Suppress("DEPRECATION")
+            val windowType = WindowManager.LayoutParams.TYPE_TOAST
             
             WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -162,8 +165,8 @@ object ToastUtils {
                 windowManager.addView(toastView, layoutParams)
                 currentWindowManager = windowManager
             } catch (e: Exception) {
-                // 如果添加失败（可能是权限问题），尝试使用 Activity 方式
-                val fallbackActivity = getActivityFromApplication(context)
+                // 如果添加失败，尝试再次获取 Activity
+                val fallbackActivity = getCurrentActivity()
                 if (fallbackActivity != null) {
                     val fallbackRootView = fallbackActivity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
                     if (fallbackRootView != null) {
@@ -185,6 +188,7 @@ object ToastUtils {
                         return
                     }
                 } else {
+                    // 如果都失败了，直接返回
                     return
                 }
             }
@@ -318,13 +322,39 @@ object ToastUtils {
     }
 
     /**
-     * 从 Application 中尝试获取当前 Activity
+     * 通过反射获取当前 Activity
      */
-    private fun getActivityFromApplication(context: Context): Activity? {
-        // 尝试从 Application 获取
-        val application = context.applicationContext
-        // 这里可以扩展为使用 ActivityLifecycleCallbacks 来跟踪当前 Activity
-        // 但为了简化，这里返回 null，让调用方处理
+    private fun getCurrentActivity(): Activity? {
+        try {
+            // 尝试通过 ActivityThread 获取当前 Activity
+            val activityThreadClass = Class.forName("android.app.ActivityThread")
+            val currentActivityThreadMethod = activityThreadClass.getMethod("currentActivityThread")
+            val currentActivityThread = currentActivityThreadMethod.invoke(null)
+            
+            val activitiesField = activityThreadClass.getDeclaredField("mActivities")
+            activitiesField.isAccessible = true
+            val activities = activitiesField.get(currentActivityThread) as? Map<*, *>
+            
+            if (activities != null) {
+                for (activityRecord in activities.values) {
+                    val activityRecordClass = activityRecord?.javaClass
+                    val pausedField = activityRecordClass?.getDeclaredField("paused")
+                    pausedField?.isAccessible = true
+                    val paused = pausedField?.getBoolean(activityRecord) ?: true
+                    
+                    if (!paused) {
+                        val activityField = activityRecordClass?.getDeclaredField("activity")
+                        activityField?.isAccessible = true
+                        val activity = activityField?.get(activityRecord) as? Activity
+                        if (activity != null) {
+                            return activity
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // 反射失败，返回 null
+        }
         return null
     }
 
