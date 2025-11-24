@@ -77,6 +77,10 @@ class MainActivity : AppCompatActivity() {
             // 测试底部 Toast
             ToastUtils.showBottom(applicationContext, "底部显示的 Toast 提示")
         }
+
+        findViewById<Button>(R.id.btn_load_more_list).setOnClickListener {
+            startActivity(Intent(this@MainActivity, LoadMoreListActivity::class.java))
+        }
     }
     private val TAG = "MainActivity"
 

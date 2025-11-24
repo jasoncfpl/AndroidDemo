@@ -3,4 +3,8 @@
     <string name="title_activity_move_view">MoveViewActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="load_more_loading">正在加载更多…</string>
+    <string name="load_more_no_more">没有更多数据了</string>
+    <string name="load_more_pull_up">上拉可以加载更多</string>
+    <string name="btn_load_more_demo">加载更多列表</string>
 </resources>
