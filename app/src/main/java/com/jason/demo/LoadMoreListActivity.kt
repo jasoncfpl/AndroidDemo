@@ -3,7 +3,6 @@ package com.jason.demo
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 class LoadMoreListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: LoadMoreAdapter<String>
+    private lateinit var adapter: StringLoadMoreAdapter
     private val handler = Handler(Looper.getMainLooper())
 
     private var currentPage = 1
@@ -28,12 +27,7 @@ class LoadMoreListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_load_more_list)
 
         recyclerView = findViewById(R.id.recycler_view)
-        adapter = LoadMoreAdapter(
-            itemLayoutId = R.layout.item_load_more_content
-        ) { itemView, data, _ ->
-            val textView = itemView.findViewById<TextView>(R.id.item_text)
-            textView.text = data
-        }
+        adapter = StringLoadMoreAdapter()
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 

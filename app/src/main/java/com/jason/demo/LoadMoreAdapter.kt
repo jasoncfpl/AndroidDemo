@@ -5,46 +5,61 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * 通用加载更多适配器，支持任意数据类型。
- *
- * @param T 数据类型
- * @param itemLayoutId 普通 item 布局
- * @param bindItem 绑定回调，携带 itemView、数据和 position
+ * “加载更多”基础适配器。通过继承该类，可在不同数据类型/布局上复用加载更多逻辑。
  */
-class LoadMoreAdapter<T>(@LayoutRes private val itemLayoutId: Int, private val bindItem: (itemView: View, itemData: T, position: Int) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class LoadMoreAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val items = mutableListOf<T>()
+    protected val items = mutableListOf<T>()
     private var isLoading = false
     private var hasMore = true
 
     override fun getItemCount(): Int = items.size + 1 // footer
 
     override fun getItemViewType(position: Int): Int {
-        return if (position < items.size) VIEW_TYPE_ITEM else VIEW_TYPE_FOOTER
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return if (viewType == VIEW_TYPE_ITEM) {
-            val view = inflater.inflate(itemLayoutId, parent, false)
-            ItemViewHolder(view)
+        return if (position < items.size) {
+            getDataViewType(position, items[position])
         } else {
-            val view = inflater.inflate(R.layout.item_load_more_footer, parent, false)
-            FooterViewHolder(view)
+            VIEW_TYPE_FOOTER
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is ItemViewHolder && position < items.size) {
-            val item = items[position]
-            bindItem(holder.itemView, item, position)
+    final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == VIEW_TYPE_FOOTER) {
+            val footerView = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_load_more_footer, parent, false)
+            FooterViewHolder(footerView)
+        } else {
+            createItemViewHolder(parent, viewType)
+        }
+    }
+
+    final override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is BaseItemViewHolder<*> && position < items.size) {
+            @Suppress("UNCHECKED_CAST")
+            (holder as BaseItemViewHolder<T>).bind(items[position], position)
         } else if (holder is FooterViewHolder) {
             holder.bind(isLoading, hasMore)
         }
+    }
+
+    /**
+     * 子类可以通过重写该方法，为不同数据返回不同 viewType。
+     */
+    protected open fun getDataViewType(position: Int, item: T): Int = DEFAULT_ITEM_VIEW_TYPE
+
+    /**
+     * 子类需要实现，创建指定 viewType 的 Item ViewHolder。
+     */
+    protected abstract fun createItemViewHolder(parent: ViewGroup, viewType: Int): BaseItemViewHolder<T>
+
+    /**
+     * 基础 Item ViewHolder，子类可以继承它来绑定自己的数据。
+     */
+    abstract class BaseItemViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        abstract fun bind(item: T, position: Int)
     }
 
     fun setItems(newItems: Collection<T>) {
@@ -76,8 +91,6 @@ class LoadMoreAdapter<T>(@LayoutRes private val itemLayoutId: Int, private val b
         notifyItemChanged(items.size)
     }
 
-    private class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
     private class FooterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val progress: ProgressBar = itemView.findViewById(R.id.footer_progress)
         private val message: TextView = itemView.findViewById(R.id.footer_message)
@@ -101,8 +114,8 @@ class LoadMoreAdapter<T>(@LayoutRes private val itemLayoutId: Int, private val b
     }
 
     companion object {
-        private const val VIEW_TYPE_ITEM = 0
-        private const val VIEW_TYPE_FOOTER = 1
+        protected const val DEFAULT_ITEM_VIEW_TYPE = 0
+        private const val VIEW_TYPE_FOOTER = Int.MAX_VALUE
     }
 }
 
