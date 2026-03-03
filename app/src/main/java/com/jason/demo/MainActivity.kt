@@ -81,6 +81,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_load_more_list).setOnClickListener {
             startActivity(Intent(this@MainActivity, LoadMoreListActivity::class.java))
         }
+
+        findViewById<Button>(R.id.btn_seekbar).setOnClickListener {
+            startActivity(Intent(this@MainActivity, SeekBarActivity::class.java))
+        }
     }
     private val TAG = "MainActivity"
 

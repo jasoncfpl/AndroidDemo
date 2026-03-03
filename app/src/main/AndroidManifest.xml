@@ -38,6 +38,11 @@
             android:label="加载更多列表"
             android:theme="@style/ActivityTheme" />
         <activity
+            android:name=".SeekBarActivity"
+            android:exported="false"
+            android:label="SeekBar 进度显示"
+            android:theme="@style/ActivityTheme" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/ActivityTheme">
