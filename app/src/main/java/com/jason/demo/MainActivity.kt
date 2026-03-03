@@ -85,6 +85,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_seekbar).setOnClickListener {
             startActivity(Intent(this@MainActivity, SeekBarActivity::class.java))
         }
+
+        findViewById<Button>(R.id.btn_loop_view_pager).setOnClickListener {
+            startActivity(Intent(this@MainActivity, LoopViewPagerActivity::class.java))
+        }
     }
     private val TAG = "MainActivity"
 

@@ -48,4 +48,12 @@
         <attr name="bsb_rtl" format="boolean"/> <!--right to left, default: false-->
         <attr name="android:enabled"/>
     </declare-styleable>
+
+    <declare-styleable name="ViewPagerIndicator">
+        <attr name="indicatorCount" format="integer"/>
+        <attr name="indicatorSize" format="dimension"/>
+        <attr name="indicatorSpacing" format="dimension"/>
+        <attr name="indicatorColor" format="color"/>
+        <attr name="indicatorSelectedColor" format="color"/>
+    </declare-styleable>
 </resources>

@@ -53,8 +53,8 @@
     </style>
 
     <style name="ThemeOverlay.AndroidDemo.FullscreenContainer" parent="">
-        <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
-        <item name="fullscreenTextColor">@color/light_blue_A200</item>
+<!--        <item name="fullscreenBackgroundColor">@color/light_blue_600</item>-->
+<!--        <item name="fullscreenTextColor">@color/light_blue_A200</item>-->
     </style>
 
     <!--    <style name="ActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">-->

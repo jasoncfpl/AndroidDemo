@@ -138,6 +138,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"/>
 
+        <Button
+            android:id="@+id/btn_loop_view_pager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="无限轮播 ViewPager2"
+            app:layout_constraintTop_toBottomOf="@id/btn_seekbar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
