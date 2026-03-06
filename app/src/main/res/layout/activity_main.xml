@@ -23,140 +23,165 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- 第一行 -->
         <Button
             android:id="@+id/app_bar_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/label"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="App Bar Layout"/>
+            app:layout_constraintEnd_toStartOf="@+id/dialog_btn"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            android:text="App Bar Layout"
+            android:layout_marginHorizontal="8dp"/>
 
         <Button
             android:id="@+id/dialog_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label"
+            app:layout_constraintStart_toEndOf="@id/app_bar_layout"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="Dialog Activity"/>
+            android:text="Dialog Activity"
+            android:layout_marginHorizontal="8dp"/>
 
+        <!-- 第二行 -->
         <Button
             android:id="@+id/move_iew"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/dialog_btn"
+            app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="MoveView"/>
+            app:layout_constraintEnd_toStartOf="@+id/btn_cancel"
+            android:text="MoveView"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
         <Button
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="取消"
-            app:layout_constraintTop_toBottomOf="@id/move_iew"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_confirm"/>
+            app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
+            app:layout_constraintStart_toEndOf="@id/move_iew"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
+        <!-- 第三行 -->
         <Button
             android:id="@+id/btn_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="确认"
             app:layout_constraintTop_toBottomOf="@id/move_iew"
-            app:layout_constraintStart_toEndOf="@id/btn_cancel"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_view_pager"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
         <Button
             android:id="@+id/btn_view_pager"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="画廊效果"
-            app:layout_constraintTop_toBottomOf="@id/btn_confirm"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/move_iew"
+            app:layout_constraintStart_toEndOf="@id/btn_confirm"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
+        <!-- 第四行 -->
         <Button
             android:id="@+id/btn_scroll_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="滚动 TextView"
-            app:layout_constraintTop_toBottomOf="@id/btn_view_pager"
+            app:layout_constraintTop_toBottomOf="@id/btn_confirm"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            app:layout_constraintEnd_toStartOf="@+id/btn_iphone_toast"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
         <Button
             android:id="@+id/btn_iphone_toast"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="iPhone Toast (居中)"
-            app:layout_constraintTop_toBottomOf="@id/btn_scroll_text_view"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_confirm"
+            app:layout_constraintStart_toEndOf="@id/btn_scroll_text_view"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
+        <!-- 第五行 -->
         <Button
             android:id="@+id/btn_iphone_toast_short"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="iPhone Toast (短时)"
-            app:layout_constraintTop_toBottomOf="@id/btn_iphone_toast"
+            app:layout_constraintTop_toBottomOf="@id/btn_scroll_text_view"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            app:layout_constraintEnd_toStartOf="@+id/btn_iphone_toast_bottom"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
         <Button
             android:id="@+id/btn_iphone_toast_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="iPhone Toast (底部)"
-            app:layout_constraintTop_toBottomOf="@id/btn_iphone_toast_short"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_scroll_text_view"
+            app:layout_constraintStart_toEndOf="@id/btn_iphone_toast_short"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
+        <!-- 第六行 -->
         <Button
             android:id="@+id/btn_load_more_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="加载更多列表"
-            app:layout_constraintTop_toBottomOf="@id/btn_iphone_toast_bottom"
+            app:layout_constraintTop_toBottomOf="@id/btn_iphone_toast_short"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            app:layout_constraintEnd_toStartOf="@+id/btn_seekbar"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
         <Button
             android:id="@+id/btn_seekbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="SeekBar 进度显示"
-            app:layout_constraintTop_toBottomOf="@id/btn_load_more_list"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_iphone_toast_short"
+            app:layout_constraintStart_toEndOf="@id/btn_load_more_list"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
+        <!-- 第七行 -->
         <Button
             android:id="@+id/btn_loop_view_pager"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="无限轮播 ViewPager2"
-            app:layout_constraintTop_toBottomOf="@id/btn_seekbar"
+            app:layout_constraintTop_toBottomOf="@id/btn_load_more_list"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            app:layout_constraintEnd_toStartOf="@+id/btn_loop_animation"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
         <Button
             android:id="@+id/btn_loop_animation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="LoopAnimation"
-            app:layout_constraintTop_toBottomOf="@id/btn_loop_view_pager"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_load_more_list"
+            app:layout_constraintStart_toEndOf="@id/btn_loop_view_pager"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
