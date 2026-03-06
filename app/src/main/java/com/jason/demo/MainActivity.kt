@@ -89,6 +89,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_loop_view_pager).setOnClickListener {
             startActivity(Intent(this@MainActivity, LoopViewPagerActivity::class.java))
         }
+
+        findViewById<Button>(R.id.btn_loop_animation).setOnClickListener {
+            startActivity(Intent(this@MainActivity, LoopAnimationActivity::class.java))
+        }
     }
     private val TAG = "MainActivity"
 

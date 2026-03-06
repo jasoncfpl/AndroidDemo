@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".LoopAnimationActivity">
+
+    <Button
+        android:id="@+id/btn_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开始动画"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"/>
+
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:background="@android:color/white"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp">
+
+        <ImageView
+            android:id="@+id/image_view1"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@android:color/holo_red_light"
+            android:layout_marginLeft="0dp"
+            android:alpha="1.0"/>
+
+        <ImageView
+            android:id="@+id/image_view2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/holo_green_light"
+            android:layout_marginLeft="24dp"
+            android:alpha="0.5"/>
+
+        <ImageView
+            android:id="@+id/image_view3"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@android:color/holo_blue_light"
+            android:layout_marginLeft="48dp"
+            android:alpha="0.2"/>
+
+    </FrameLayout>
+
+</LinearLayout>
