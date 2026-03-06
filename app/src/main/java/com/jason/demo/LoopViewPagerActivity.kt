@@ -12,11 +12,7 @@ class LoopViewPagerActivity : AppCompatActivity() {
     private lateinit var adapter: LoopViewPagerAdapter
     private lateinit var indicator: com.jason.demo.widget.ViewPagerIndicator
     private val handler = Handler(Looper.getMainLooper())
-    private val autoScrollRunnable: Runnable = Runnable {
-        val currentItem = viewPager2.currentItem
-        viewPager2.setCurrentItem(currentItem + 1, true)
-        handler.postDelayed(autoScrollRunnable, 3000)
-    }
+    private lateinit var autoScrollRunnable: Runnable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +46,15 @@ class LoopViewPagerActivity : AppCompatActivity() {
         adapter = LoopViewPagerAdapter(images)
         viewPager2.adapter = adapter
         
-        // 设置初始位置为中间，实现无限轮播效果
-        viewPager2.setCurrentItem(adapter.itemCount / 2, false)
+        // 初始化autoScrollRunnable
+        autoScrollRunnable = Runnable {
+            val currentItem = viewPager2.currentItem
+            viewPager2.setCurrentItem(currentItem + 1, true)
+            handler.postDelayed(autoScrollRunnable, 3000)
+        }
+        
+        // 设置初始位置为第二个（即第一个真实元素）
+        viewPager2.setCurrentItem(1, false)
         
         // 设置指示器
         indicator.setViewPager(viewPager2, images.size)
@@ -74,13 +77,31 @@ class LoopViewPagerActivity : AppCompatActivity() {
             false
         }
         
-        // 监听页面变化，更新指示器
+        // 监听页面变化，实现循环滚动
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                // 计算实际位置
-                val realPosition = position % images.size
+                // 计算实际位置更新指示器
+                val realPosition = when (position) {
+                    0 -> images.size - 1
+                    adapter.itemCount - 1 -> 0
+                    else -> position - 1
+                }
                 indicator.setCurrentItem(realPosition)
+            }
+            
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+                if (state == ViewPager2.SCROLL_STATE_IDLE) {
+                    // 当滚动停止时，检查是否需要循环
+                    val currentPosition = viewPager2.currentItem
+                    when (currentPosition) {
+                        // 当滚动到第一个页面时，切换到倒数第二个页面（即最后一个真实元素）
+                        0 -> viewPager2.setCurrentItem(adapter.itemCount - 2, false)
+                        // 当滚动到最后一个页面时，切换到第二个页面（即第一个真实元素）
+                        adapter.itemCount - 1 -> viewPager2.setCurrentItem(1, false)
+                    }
+                }
             }
         })
     }

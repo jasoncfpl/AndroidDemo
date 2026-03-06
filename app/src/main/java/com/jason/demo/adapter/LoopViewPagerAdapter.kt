@@ -9,9 +9,9 @@ import com.jason.demo.R
 
 class LoopViewPagerAdapter(private val images: List<Int>) : RecyclerView.Adapter<LoopViewPagerAdapter.ViewHolder>() {
 
-    // 实现无限轮播的关键：设置一个很大的数值作为 itemCount
+    // 首尾各添加一个元素，用于实现循环滚动
     override fun getItemCount(): Int {
-        return Int.MAX_VALUE
+        return if (images.size > 1) images.size + 2 else images.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -20,8 +20,11 @@ class LoopViewPagerAdapter(private val images: List<Int>) : RecyclerView.Adapter
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // 计算实际位置
-        val realPosition = position % images.size
+        val realPosition = when (position) {
+            0 -> images.size - 1 // 第一个位置显示最后一个元素
+            itemCount - 1 -> 0 // 最后一个位置显示第一个元素
+            else -> position - 1 // 中间位置正常显示
+        }
         holder.imageView.setImageResource(images[realPosition])
     }
 
