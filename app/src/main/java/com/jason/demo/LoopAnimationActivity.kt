@@ -20,11 +20,13 @@ class LoopAnimationActivity : AppCompatActivity() {
     // 定义三个 ImageView 的初始透明度
     private val initialAlphas = listOf(1f, 0.5f, 0.2f)
     // 定义三个 ImageView 的初始左边距（dp）
-    private val initialMargins = listOf(0, 24, 48)
+    private val initialMargins = listOf(8, 36, 56)
     // 当前每个 ImageView 对应的初始状态索引
     private var currentIndices = listOf(0, 1, 2)
     // 动画执行次数，用于控制循环逻辑
     private var animationCount = 0
+    // 是否执行动画循环
+    private var shouldLoop = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,19 +49,19 @@ class LoopAnimationActivity : AppCompatActivity() {
         val index3 = currentIndices[2]
 
         // 第一个 ImageView 动画：向左移动 24dp，放大到 64dp，透明度从对应初始状态到 0
-        val translate1 = ObjectAnimator.ofFloat(imageView1, View.TRANSLATION_X, 0f, -24.dpToPx())
+        val translate1 = ObjectAnimator.ofFloat(imageView1, View.TRANSLATION_X, 8.dpToPx(), 0.dpToPx())
         val scaleX1 = ObjectAnimator.ofFloat(imageView1, View.SCALE_X, 1f, 64f / initialSizes[index1])
         val scaleY1 = ObjectAnimator.ofFloat(imageView1, View.SCALE_Y, 1f, 64f / initialSizes[index1])
         val alpha1 = ObjectAnimator.ofFloat(imageView1, View.ALPHA, initialAlphas[index1], 0f)
 
         // 第二个 ImageView 动画：向左移动 24dp，放大到 56dp，透明度从对应初始状态到 1
-        val translate2 = ObjectAnimator.ofFloat(imageView2, View.TRANSLATION_X, 0f, -24.dpToPx())
+        val translate2 = ObjectAnimator.ofFloat(imageView2, View.TRANSLATION_X, 36f.dpToPx(), 20.dpToPx())
         val scaleX2 = ObjectAnimator.ofFloat(imageView2, View.SCALE_X, 1f, 56f / initialSizes[index2])
         val scaleY2 = ObjectAnimator.ofFloat(imageView2, View.SCALE_Y, 1f, 56f / initialSizes[index2])
         val alpha2 = ObjectAnimator.ofFloat(imageView2, View.ALPHA, initialAlphas[index2], 1f)
 
         // 第三个 ImageView 动画：向左移动 24dp，放大到 40dp，透明度从对应初始状态到 0.5
-        val translate3 = ObjectAnimator.ofFloat(imageView3, View.TRANSLATION_X, 0f, -24.dpToPx())
+        val translate3 = ObjectAnimator.ofFloat(imageView3, View.TRANSLATION_X, 72.dpToPx(), 36.dpToPx())
         val scaleX3 = ObjectAnimator.ofFloat(imageView3, View.SCALE_X, 1f, 40f / initialSizes[index3])
         val scaleY3 = ObjectAnimator.ofFloat(imageView3, View.SCALE_Y, 1f, 40f / initialSizes[index3])
         val alpha3 = ObjectAnimator.ofFloat(imageView3, View.ALPHA, initialAlphas[index3], 0.5f)
@@ -87,7 +89,7 @@ class LoopAnimationActivity : AppCompatActivity() {
             override fun onAnimationStart(animation: android.animation.Animator) {}
             override fun onAnimationEnd(animation: android.animation.Animator) {
                 // 动画结束后，更新 ImageView 的状态
-                resetAndLoop()
+//                resetAndLoop()
             }
             override fun onAnimationCancel(animation: android.animation.Animator) {}
             override fun onAnimationRepeat(animation: android.animation.Animator) {}
@@ -103,31 +105,22 @@ class LoopAnimationActivity : AppCompatActivity() {
         // 增加动画执行次数
         animationCount++
 
-        // 根据动画执行次数更新当前索引，实现循环
-        currentIndices = when (animationCount % 3) {
-            1 -> listOf(
-                2, // 第一次动画后：第一个 ImageView 变为第三个的初始状态
-                0, // 第二个 ImageView 变为第一个的初始状态
-                1  // 第三个 ImageView 变为第二个的初始状态
-            )
-            2 -> listOf(
-                1, // 第二次动画后：第一个 ImageView 变为第二个的初始状态
-                2, // 第二个 ImageView 变为第三个的初始状态
-                0  // 第三个 ImageView 变为第一个的初始状态
-            )
-            else -> listOf(
-                0, // 第三次动画后：回到初始状态
-                1,
-                2
-            )
-        }
+        // 根据动画执行次数更新当前索引
+        val newIndices = listOf(
+            2, // 第一次动画后：第一个 ImageView 变为第三个的初始状态（蓝色）
+            0, // 第二个 ImageView 变为第一个的初始状态（红色）
+            1  // 第三个 ImageView 变为第二个的初始状态（绿色）
+        )
 
-        // 更新 ImageView 的位置、尺寸和透明度
-        updateImageViewStates()
+        // 更新当前索引
+        currentIndices = newIndices
 
-        // 延迟一下开始下一轮动画，确保布局更新完成
+        // 延迟一下再更新状态，确保动画完全结束
         imageView1.postDelayed({
-            startAnimations()
+            // 更新 ImageView 的位置、尺寸和透明度
+            updateImageViewStates()
+
+            // 执行完第一次动画后停止，不再执行第二次动画
         }, 100)
     }
 
@@ -137,34 +130,43 @@ class LoopAnimationActivity : AppCompatActivity() {
         val index2 = currentIndices[1]
         val index3 = currentIndices[2]
 
-        // 更新第一个 ImageView
-        val layoutParams1 = imageView1.layoutParams as android.widget.FrameLayout.LayoutParams
-        layoutParams1.width = initialSizes[index1].dpToPx().toInt()
-        layoutParams1.height = initialSizes[index1].dpToPx().toInt()
+        // 直接创建新的布局参数，确保正确应用
+        val layoutParams1 = android.widget.FrameLayout.LayoutParams(
+            initialSizes[index1].dpToPx().toInt(),
+            initialSizes[index1].dpToPx().toInt()
+        )
         layoutParams1.leftMargin = initialMargins[index1].dpToPx().toInt()
+        layoutParams1.gravity = android.view.Gravity.CENTER_VERTICAL
         imageView1.layoutParams = layoutParams1
         imageView1.alpha = initialAlphas[index1]
 
-        // 更新第二个 ImageView
-        val layoutParams2 = imageView2.layoutParams as android.widget.FrameLayout.LayoutParams
-        layoutParams2.width = initialSizes[index2].dpToPx().toInt()
-        layoutParams2.height = initialSizes[index2].dpToPx().toInt()
+        val layoutParams2 = android.widget.FrameLayout.LayoutParams(
+            initialSizes[index2].dpToPx().toInt(),
+            initialSizes[index2].dpToPx().toInt()
+        )
         layoutParams2.leftMargin = initialMargins[index2].dpToPx().toInt()
+        layoutParams2.gravity = android.view.Gravity.CENTER_VERTICAL
         imageView2.layoutParams = layoutParams2
         imageView2.alpha = initialAlphas[index2]
 
-        // 更新第三个 ImageView
-        val layoutParams3 = imageView3.layoutParams as android.widget.FrameLayout.LayoutParams
-        layoutParams3.width = initialSizes[index3].dpToPx().toInt()
-        layoutParams3.height = initialSizes[index3].dpToPx().toInt()
+        val layoutParams3 = android.widget.FrameLayout.LayoutParams(
+            initialSizes[index3].dpToPx().toInt(),
+            initialSizes[index3].dpToPx().toInt()
+        )
         layoutParams3.leftMargin = initialMargins[index3].dpToPx().toInt()
+        layoutParams3.gravity = android.view.Gravity.CENTER_VERTICAL
         imageView3.layoutParams = layoutParams3
         imageView3.alpha = initialAlphas[index3]
 
-        // 应用布局更改
-        imageView1.requestLayout()
-        imageView2.requestLayout()
-        imageView3.requestLayout()
+        // 强制重新布局
+        imageView1.invalidate()
+        imageView2.invalidate()
+        imageView3.invalidate()
+        
+        // 确保父布局也重新布局
+        val parent = imageView1.parent as android.view.ViewGroup
+        parent.invalidate()
+        parent.requestLayout()
     }
 
     // 扩展函数：将 dp 转换为 px
