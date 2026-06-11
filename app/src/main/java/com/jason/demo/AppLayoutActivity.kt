@@ -7,6 +7,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
+//注释 1
 class AppLayoutActivity : AppCompatActivity() {
     // recyclerView中的item数据源
     private val itemData  = mutableListOf<String>()
